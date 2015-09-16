@@ -40,31 +40,19 @@ WiFiServer server(7890);
 
 #define OSCDEBUG    (0)
 
-#define NEOPIXELBUS (1)
-#if NEOPIXELBUS
 #include <NeoPixelBus.h>
 #define SET_PIXEL_COLOR SetPixelColor
 #define SHOW            Show
 #define BEGIN           Begin
-#else
-#include <Adafruit_NeoPixel.h>
-#define SET_PIXEL_COLOR setPixelColor
-#define SHOW            show
-#define BEGIN           begin
-#endif
 const int MAX_LEDS = 1024;
 const int LED_PIN = 2;
 
-#if NEOPIXELBUS
 NeoPixelBus strip = NeoPixelBus(MAX_LEDS, LED_PIN);
 // NeoPixelBus strip = NeoPixelBus(pixelCount, pixelPin, NEO_RGB);
 //
 // some pixels require the color components to be in a different order
 // using the flag NEO_GRB will use the order; green, red, then blue.
 //
-#else
-Adafruit_NeoPixel strip = Adafruit_NeoPixel(MAX_LEDS, LED_PIN, NEO_GRB + NEO_KHZ800);
-#endif
 
 // Gamma correction 2.2 look up table
 uint8_t GammaLUT[256];
