@@ -11,23 +11,28 @@ interface. Adding a battery makes the LED array + ESP8266 combination portable.
  grid8x8_dot.pde                                     8x8 array
 ```
 
-- Drives one WS2812 LED strip up to 1024 LEDs but only tested up to 64 LEDs arranged in an 8x8 grid.
+- Drives one WS281x LED strip up to 1024 LEDs but only tested up to 128 LEDs arranged in an 8x16 grid.
 - Implements the Open Pixel Control protocol on TCP port 7890. This is the same protocol used by fadecandy server (fcserver).
 
 This is not a Fadecandy controller hardware clone.
 
 - No dithering.
 - No keyframe interpolation.
-- High frame rates can crash the ESP8266
+~~- High frame rates can crash the ESP8266~~
 - Fixed gamma correction of 2.2
 - SysEx ignored.
 
 ## Compiling
 
-*WARNING*
+~~*WARNING*~~
 
-Build this program using ESP8266 board package 1.6.4-673-g8cd3697. Building
-with a newer version will result in WDT Reset crashes!
+~~Build this program using ESP8266 board package 1.6.4-673-g8cd3697. Building~~
+~~with a newer version will result in WDT Reset crashes!~~
+
+- Build with the ESP8266 board package 1.6.5 or newer.
+- ESP8266 CPU Frequency must be set to 160 MHz.
+- Use the latest NeoPixelBus library and use the UartDriven branch
+- Connect ESP8266 GPIO2 to the WS281x Data In pin. No other GPIO pin can be used.
 
 ## Example programs to drive the LEDs
 
@@ -54,7 +59,9 @@ to create interactive LED displays. Edit the PDE file to add the ESP IP address.
 
 ## References
 
-The NeoPixelBus library is used to drive the WS281x LEDs.
+The NeoPixelBus library is used to drive the WS281x LEDs. The UartDriven branch solves the problems with WDT Reset
+crashes. Be sure to use it. This change also requires the WS281x Data In pin be connected to ESP8266 GPIO2.
+
 See https://github.com/Makuna/NeoPixelBus for more details.
 
 See https://github.com/zestyping/openpixelcontrol for the OPC protocol
