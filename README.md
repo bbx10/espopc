@@ -18,7 +18,7 @@ This is not a Fadecandy controller hardware clone.
 
 - No dithering.
 - No keyframe interpolation.
-~~- High frame rates can crash the ESP8266~~
+- ~~High frame rates can crash the ESP8266~~
 - Fixed gamma correction of 2.2
 - SysEx ignored.
 
