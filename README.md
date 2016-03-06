@@ -18,21 +18,17 @@ This is not a Fadecandy controller hardware clone.
 
 - No dithering.
 - No keyframe interpolation.
-- ~~High frame rates can crash the ESP8266~~
 - Fixed gamma correction of 2.2
 - SysEx ignored.
 
 ## Compiling
 
-~~*WARNING*~~
-
-~~Build this program using ESP8266 board package 1.6.4-673-g8cd3697. Building~~
-~~with a newer version will result in WDT Reset crashes!~~
-
 - Build with the ESP8266 board package 1.6.5 or newer.
 - ESP8266 CPU Frequency must be set to 160 MHz.
-- Use the latest NeoPixelBus library and use the UartDriven branch
+- Use the latest NeoPixelBus library installed using the IDE library manager. The UartDriven branch is no longer supported.
 - Connect ESP8266 GPIO2 to the WS281x Data In pin. No other GPIO pin can be used.
+
+The most recent testing was done using Arduino IDE 1.6.7, ESP8266 board package 2.1.0, NeoPixelBus library 2.0.2, and Adafruit Huzzah ESP8266.
 
 ## Example programs to drive the LEDs
 
@@ -59,13 +55,14 @@ to create interactive LED displays. Edit the PDE file to add the ESP IP address.
 
 ## References
 
-The NeoPixelBus library is used to drive the WS281x LEDs. The UartDriven branch solves the problems with WDT Reset
-crashes. Be sure to use it. This change also requires the WS281x Data In pin be connected to ESP8266 GPIO2.
+The NeoPixelBus library is used to drive the WS281x LEDs. The UartDrive method
+has been merged into the master release branch so the UartDriven branch should
+no longer be used. This change also requires the WS281x Data In pin be
+connected to ESP8266 GPIO2.
 
 See https://github.com/Makuna/NeoPixelBus for more details.
 
-See https://github.com/zestyping/openpixelcontrol for the OPC protocol
-specification.
+See https://github.com/zestyping/openpixelcontrol for the OPC protocol specification.
 
 This Adafruit LED art tutorial covers wiring and powering the LEDs, etc. In
 addition, it covers installing and running Fadecandy example programs.

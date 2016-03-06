@@ -41,18 +41,33 @@ WiFiServer server(7890);
 #define OSCDEBUG    (0)
 
 #include <NeoPixelBus.h>
-#define SET_PIXEL_COLOR SetPixelColor
-#define SHOW            Show
-#define BEGIN           Begin
-const int MAX_LEDS = 1024;
-const int LED_PIN = 2;
+const int PixelCount = 1024;
+const int PixelPin = 2;
 
-NeoPixelBus strip = NeoPixelBus(MAX_LEDS, LED_PIN);
-// NeoPixelBus strip = NeoPixelBus(pixelCount, pixelPin, NEO_RGB);
+// three element pixels, in different order and speeds
+//NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> strip(PixelCount, PixelPin);
+//NeoPixelBus<NeoRgbFeature, Neo400KbpsMethod> strip(PixelCount, PixelPin);
+
+// You can also use one of these for Esp8266,
+// each having their own restrictions
 //
-// some pixels require the color components to be in a different order
-// using the flag NEO_GRB will use the order; green, red, then blue.
-//
+// These two are the same as above as the DMA method is the default
+// NOTE: These will ignore the PIN and use GPI03 pin
+//NeoPixelBus<NeoGrbFeature, NeoEsp8266Dma800KbpsMethod> strip(PixelCount, PixelPin);
+//NeoPixelBus<NeoRgbFeature, NeoEsp8266Dma400KbpsMethod> strip(PixelCount, PixelPin);
+
+// Uart method is good for the Esp-01 or other pin restricted modules
+// NOTE: These will ignore the PIN and use GPI02 pin
+NeoPixelBus<NeoGrbFeature, NeoEsp8266Uart800KbpsMethod> strip(PixelCount, PixelPin);
+//NeoPixelBus<NeoRgbFeature, NeoEsp8266Uart400KbpsMethod> strip(PixelCount, PixelPin);
+
+// The bitbang method is really only good if you are not using WiFi features of the ESP
+// It works with all but pin 16
+//NeoPixelBus<NeoGrbFeature, NeoEsp8266BitBang800KbpsMethod> strip(PixelCount, PixelPin);
+//NeoPixelBus<NeoRgbFeature, NeoEsp8266BitBang400KbpsMethod> strip(PixelCount, PixelPin);
+
+// four element pixels, RGBW
+//NeoPixelBus<NeoRgbwFeature, Neo800KbpsMethod> strip(PixelCount, PixelPin);
 
 // Gamma correction 2.2 look up table
 uint8_t GammaLUT[256];
@@ -70,11 +85,11 @@ void fillGammaLUT(float gamma)
 
 void setup() {
   Serial.begin(115200);
-  Serial.println("");
+  Serial.println();
 
   // this resets all the neopixels to an off state
-  strip.BEGIN();
-  strip.SHOW();
+  strip.Begin();
+  strip.Show();
 
   // Connect to WiFi network
   Serial.println();
@@ -112,10 +127,6 @@ void setup() {
 
 WiFiClient client;
 
-void loop() {
-  clientEvent();
-}
-
 #define minsize(x,y) (((x)<(y))?(x):(y))
 
 void clientEvent()
@@ -123,7 +134,7 @@ void clientEvent()
   static int packetParse = 0;
   static uint8_t pktChannel, pktCommand;
   static uint16_t pktLength, pktLengthAdjusted, bytesIn;
-  static uint8_t pktData[MAX_LEDS*3];
+  static uint8_t pktData[PixelCount*3];
   uint16_t bytesRead;
   size_t frame_count = 0, frame_discard = 0;
 
@@ -191,9 +202,11 @@ void clientEvent()
             int i;
             uint8_t *pixrgb;
             pixrgb = pktData;
-            for (i = 0; i < minsize((pktLengthAdjusted / 3), MAX_LEDS); i++) {
-              strip.SET_PIXEL_COLOR(i, GammaLUT[*pixrgb++], GammaLUT[*pixrgb++],
-                  GammaLUT[*pixrgb++]);
+            for (i = 0; i < minsize((pktLengthAdjusted / 3), PixelCount); i++) {
+              strip.SetPixelColor(i,
+                  RgbColor(GammaLUT[*pixrgb++],
+                           GammaLUT[*pixrgb++],
+                           GammaLUT[*pixrgb++]));
             }
             // Display only the first frame in this cycle. Buffered frames
             // are discarded.
@@ -202,7 +215,7 @@ void clientEvent()
               Serial.print("=");
               unsigned long startMicros = micros();
 #endif
-              strip.SHOW();
+              strip.Show();
 #if OSCDEBUG
               Serial.printf("%lu\r\n", micros() - startMicros);
 #endif
@@ -232,4 +245,8 @@ void clientEvent()
     Serial.printf("discard %u\r\n", frame_discard);
   }
 #endif
+}
+
+void loop() {
+  clientEvent();
 }
